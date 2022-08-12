@@ -94,24 +94,21 @@ confint(causal_model.4) # will give 95% CI for forestry estimate
 
 # simulating causal effects from methods by McElreath----
 #(see:https://www.youtube.com/watch?v=NSuTaeW6Orc)
-
+library(rethinking)
 f<- function(n=100, bXZ = 1, bZY=1){
   X <- rnorm(n)
   u <- rnorm(n)
   Z <- rnorm(n, bXZ*X + u)
   Y <- rnorm(n, bZY*Z + u)
-  bX <-corf( lm(Y~X))['X']
+  bX <-coef( lm(Y~X))['X']
   bXZ <- coef( lm(Y~ X + Z))['X']
   return(c(bX,bXZ))
 }
 
-sim <- mcrepliate( 1e4, f(bZY=0), mc.cores=8)
+sim <- mcreplicate( 1e4, f(bZY=0), mc.cores=2)
 
-dens( sim[1,], lwd=3 , xlab='posterior mean')
+dens( sim[1,], lwd=3 , xlab='posterior mean', xlim=c(-1,1))
 dens( sim[2,], lwd=3, col=2, add=TRUE)
-
-
-
 
 
 library(dagR)
